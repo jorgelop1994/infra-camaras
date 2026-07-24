@@ -6,7 +6,7 @@
 <title>Pi Cámaras</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; overflow: hidden; background: #000; }
+  html, body { height: 100%; overflow: hidden; background: #000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
   body {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -18,50 +18,235 @@
     position: relative;
     background: #0d1117;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
   iframe {
+    flex: 1;
     width: 100%;
-    height: 100%;
     border: 0;
     display: block;
+    background: #0d1117;
   }
   .label {
     position: absolute;
     top: 4px;
     left: 4px;
-    z-index: 10;
-    background: rgba(0,0,0,0.7);
+    z-index: 20;
+    background: rgba(0,0,0,0.75);
     color: #fff;
-    padding: 1px 6px;
+    padding: 1px 8px;
     border-radius: 3px;
-    font: 10px -apple-system, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    pointer-events: none;
+    backdrop-filter: blur(2px);
+  }
+  .controls {
+    position: absolute;
+    bottom: 6px;
+    left: 6px;
+    right: 6px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 6px;
     pointer-events: none;
   }
+  .controls > * {
+    pointer-events: auto;
+  }
+  .btn-reload {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.65);
+    color: #8b949e;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    backdrop-filter: blur(2px);
+    flex-shrink: 0;
+  }
+  .btn-reload:hover {
+    background: rgba(48,54,61,0.85);
+    color: #fff;
+  }
+  .btn-reload:active {
+    transform: scale(0.9);
+  }
+  .btn-reload.spinning .icon {
+    animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .status {
+    font-size: 10px;
+    color: #8b949e;
+    padding: 2px 6px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 3px;
+    backdrop-filter: blur(2px);
+    flex: 1;
+    text-align: center;
+    min-height: 18px;
+    line-height: 18px;
+  }
+  .status.connected { color: #3fb950; }
+  .status.reloading { color: #d29922; }
+  .status.error { color: #f85149; }
   .empty {
     display: flex;
     align-items: center;
     justify-content: center;
     color: #21262d;
-    font: 48px -apple-system, sans-serif;
+    font-size: 48px;
+    font-weight: 100;
+    flex: 1;
   }
+  /* Loading overlay for iframe */
+  .loading-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 15;
+    background: #0d1117;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #484f58;
+  }
+  .loading-overlay.active { display: flex; }
 </style>
 </head>
 <body>
-<div class="cell">
+
+<div class="cell" data-cam="xiaomi">
   <div class="label">Xiaomi</div>
+  <div class="loading-overlay">conectando…</div>
   <iframe src="http://10.88.88.1:1984/stream.html?src=xiaomi"></iframe>
+  <div class="controls">
+    <button class="btn-reload" title="Recargar">↻</button>
+    <div class="status">en vivo</div>
+  </div>
 </div>
-<div class="cell">
+
+<div class="cell" data-cam="a9">
   <div class="label">A9</div>
+  <div class="loading-overlay">conectando…</div>
   <iframe src="http://10.88.88.1:1984/stream.html?src=a9&mode=mjpeg"></iframe>
+  <div class="controls">
+    <button class="btn-reload" title="Recargar">↻</button>
+    <div class="status">en vivo</div>
+  </div>
 </div>
-<div class="cell">
+
+<div class="cell" data-cam="steren">
   <div class="label">Sterem</div>
+  <div class="loading-overlay">conectando…</div>
   <iframe src="http://10.88.88.1:1984/stream.html?src=steren"></iframe>
+  <div class="controls">
+    <button class="btn-reload" title="Recargar">↻</button>
+    <div class="status">en vivo</div>
+  </div>
 </div>
+
 <div class="cell">
   <div class="label">—</div>
   <div class="empty">+</div>
 </div>
+
+<script>
+(function() {
+  'use strict';
+
+  // Debounce: min 3s entre recargas por cámara
+  const cooldowns = {};
+
+  // Error timeout: si el iframe no carga en 15s, marcar error
+  const LOAD_TIMEOUT = 15000;
+
+  document.querySelectorAll('.cell[data-cam]').forEach(cell => {
+    const cam = cell.dataset.cam;
+    const btn = cell.querySelector('.btn-reload');
+    const status = cell.querySelector('.status');
+    const iframe = cell.querySelector('iframe');
+    const overlay = cell.querySelector('.loading-overlay');
+
+    // Estado inicial
+    cooldowns[cam] = 0;
+
+    // Detectar carga del iframe
+    iframe.addEventListener('load', () => {
+      overlay.classList.remove('active');
+      status.className = 'status connected';
+      status.textContent = 'en vivo';
+    });
+
+    // Error si no carga en LOAD_TIMEOUT
+    let loadTimer = setTimeout(() => {
+      if (overlay.classList.contains('active')) {
+        overlay.classList.remove('active');
+        status.className = 'status error';
+        status.textContent = 'sin señal';
+      }
+    }, LOAD_TIMEOUT);
+
+    // Reset timer on load
+    iframe.addEventListener('load', () => {
+      clearTimeout(loadTimer);
+      loadTimer = setTimeout(() => {
+        if (overlay.classList.contains('active')) {
+          overlay.classList.remove('active');
+          status.className = 'status error';
+          status.textContent = 'sin señal';
+        }
+      }, LOAD_TIMEOUT);
+    });
+
+    // Botón recargar
+    btn.addEventListener('click', () => {
+      const now = Date.now();
+      if (now - cooldowns[cam] < 3000) {
+        return; // Cooldown activo
+      }
+      cooldowns[cam] = now;
+
+      // Animación
+      btn.classList.add('spinning');
+
+      // Mostrar estado
+      status.className = 'status reloading';
+      status.textContent = 'recargando…';
+      overlay.classList.add('active');
+
+      // Recargar el iframe
+      iframe.src = iframe.src;
+
+      // Quitar spinner después de 2s
+      setTimeout(() => {
+        btn.classList.remove('spinning');
+      }, 2000);
+    });
+
+    // Detectar cuando la página es visible de nuevo (tab switch)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        // Pequeño delay para no sobrecargar al volver
+        setTimeout(() => {
+          status.className = 'status connected';
+          status.textContent = 'en vivo';
+        }, 500);
+      }
+    });
+  });
+})();
+</script>
 </body>
 </html>
