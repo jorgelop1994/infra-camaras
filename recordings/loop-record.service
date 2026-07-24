@@ -1,0 +1,11 @@
+[Unit]
+Description=Grabación loop 24h de cámaras
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/camaras/scripts/loop-record.sh start
+ExecStop=/opt/camaras/scripts/loop-record.sh stop
+RemainAfterExit=yes
+Restart=no
