@@ -35,6 +35,7 @@
     background: #0d1117;
   }
 
+  /* ── Badge informativo (sin acción) ── */
   .cam-badge {
     position: absolute;
     top: 4px;
@@ -46,13 +47,9 @@
     text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.5);
     letter-spacing: 0.3px;
     padding: 2px 4px;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
     user-select: none;
+    pointer-events: none;
   }
-  .cam-badge:active { opacity: 0.5; }
-
   .status-dot {
     display: inline-block;
     width: 6px;
@@ -66,6 +63,7 @@
   .status-dot.loading { background: #d29922; box-shadow: 0 0 4px #d29922; animation: pulse 1s infinite; }
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 
+  /* ── Back button ── */
   .back-btn {
     display: none;
     position: absolute;
@@ -88,6 +86,7 @@
   .cell.expanded .back-btn { display: flex; }
   .back-btn:active { background: rgba(48,54,61,0.8); }
 
+  /* ── Menu trigger ── */
   .menu-btn {
     position: absolute;
     right: 5px;
@@ -112,6 +111,7 @@
   .menu-btn:active { background: rgba(48,54,61,0.8); color: #f0f6fc; }
   .menu-btn.open { background: rgba(48,54,61,0.8); color: #f0f6fc; }
 
+  /* ── Menu panel: 2-column grid ── */
   .menu-panel {
     position: absolute;
     right: 40px;
@@ -119,15 +119,19 @@
     transform: translateY(-50%);
     z-index: 25;
     display: none;
-    flex-direction: column;
+    grid-template-columns: 34px 34px;
     gap: 4px;
-    padding: 5px;
+    padding: 6px;
     background: rgba(13,17,23,0.94);
     border: 1px solid rgba(48,54,61,0.5);
     border-radius: 10px;
     backdrop-filter: blur(10px);
   }
-  .menu-panel.open { display: flex; }
+  .menu-panel.open { display: grid; }
+  .menu-panel .full-width {
+    grid-column: 1 / -1;
+    width: auto;
+  }
 
   .menu-item {
     width: 34px;
@@ -186,7 +190,7 @@
   <button class="menu-btn" title="Más">⋮</button>
   <div class="menu-panel">
     <button class="menu-item expand" data-action="expand" title="Expandir al grid">⛶</button>
-    <button class="menu-item full" data-action="fullscreen" title="Pantalla completa (navegador)">🖵</button>
+    <button class="menu-item full" data-action="fullscreen" title="Pantalla completa">🖵</button>
     <button class="menu-item" data-action="reload" title="Recargar">↻</button>
     <a class="menu-item" data-action="snapshot" href="/capture/xiaomi" target="_blank" download="xiaomi.jpg" title="Snapshot">📷</a>
   </div>
@@ -200,7 +204,7 @@
   <button class="menu-btn" title="Más">⋮</button>
   <div class="menu-panel">
     <button class="menu-item expand" data-action="expand" title="Expandir al grid">⛶</button>
-    <button class="menu-item full" data-action="fullscreen" title="Pantalla completa (navegador)">🖵</button>
+    <button class="menu-item full" data-action="fullscreen" title="Pantalla completa">🖵</button>
     <button class="menu-item" data-action="reload" title="Recargar">↻</button>
     <a class="menu-item" data-action="snapshot" href="/capture/a9" target="_blank" download="a9.jpg" title="Snapshot">📷</a>
   </div>
@@ -214,10 +218,10 @@
   <button class="menu-btn" title="Más">⋮</button>
   <div class="menu-panel">
     <button class="menu-item expand" data-action="expand" title="Expandir al grid">⛶</button>
-    <button class="menu-item full" data-action="fullscreen" title="Pantalla completa (navegador)">🖵</button>
+    <button class="menu-item full" data-action="fullscreen" title="Pantalla completa">🖵</button>
     <button class="menu-item" data-action="reload" title="Recargar">↻</button>
-    <button class="menu-item audio-off" data-action="audio" title="Activar audio" style="display:none">🔇</button>
     <a class="menu-item" data-action="snapshot" href="/capture/steren" target="_blank" download="steren.jpg" title="Snapshot">📷</a>
+    <button class="menu-item audio-off full-width" data-action="audio" title="Activar audio" style="display:none">🔇</button>
   </div>
 </div>
 
@@ -236,7 +240,6 @@
   let hideTimer = null;
   let expandedCell = null;
 
-  // ── Dashboard grid expand ──
   function toggleGridExpand(cell) {
     if (cell.classList.contains('expanded')) {
       cell.classList.remove('expanded');
@@ -251,14 +254,11 @@
     }
   }
 
-  // ── Browser fullscreen ──
   function toggleBrowserFullscreen(cell) {
     if (document.fullscreenElement) {
       document.exitFullscreen();
     } else {
-      cell.requestFullscreen().catch(err => {
-        console.warn('Fullscreen error:', err);
-      });
+      cell.requestFullscreen().catch(() => {});
     }
   }
 
@@ -289,7 +289,6 @@
     const dot = cell.querySelector('.status-dot');
     const menuBtn = cell.querySelector('.menu-btn');
     const menuPanel = cell.querySelector('.menu-panel');
-    const badge = cell.querySelector('.cam-badge');
     const backBtn = cell.querySelector('.back-btn');
 
     // ── Iframe load ──
@@ -315,13 +314,7 @@
       }, LOAD_TIMEOUT);
     });
 
-    // ── Badge → grid expand ──
-    badge.addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleGridExpand(cell);
-    });
-
-    // ── Back → grid expand ──
+    // ── Back (minimize from grid expand) ──
     backBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       toggleGridExpand(cell);
@@ -404,18 +397,8 @@
     });
   });
 
-  // ── Escape → exit fullscreen or grid expand ──
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      if (expandedCell) toggleGridExpand(expandedCell);
-    }
-  });
-
-  // ── Fullscreen change: back button visibility ──
-  document.addEventListener('fullscreenchange', () => {
-    if (!document.fullscreenElement && expandedCell) {
-      // Exited browser fullscreen, keep grid expanded
-    }
+    if (e.key === 'Escape' && expandedCell) toggleGridExpand(expandedCell);
   });
 })();
 </script>
