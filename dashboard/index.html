@@ -44,26 +44,41 @@
   }
   .controls {
     position: absolute;
-    bottom: 6px;
-    left: 6px;
-    right: 6px;
+    top: 4px;
+    right: 4px;
     z-index: 20;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     pointer-events: none;
   }
   .controls > * {
     pointer-events: auto;
   }
+  .status {
+    position: absolute;
+    bottom: 30px;
+    left: 6px;
+    z-index: 20;
+    font-size: 9px;
+    color: #8b949e;
+    padding: 1px 6px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 3px;
+    backdrop-filter: blur(2px);
+    pointer-events: none;
+  }
+  .status.connected { color: #3fb950; }
+  .status.reloading { color: #d29922; }
+  .status.error { color: #f85149; }
   .btn-reload, .btn-snap, .btn-audio {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     border: none;
     border-radius: 50%;
     background: rgba(0,0,0,0.65);
     color: #8b949e;
-    font-size: 16px;
+    font-size: 12px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -75,14 +90,14 @@
   }
   .btn-reload:hover, .btn-snap:hover, .btn-audio:hover {
     background: rgba(48,54,61,0.85);
-    color: #fff;
+    color: #f0f6fc;
   }
   .btn-reload:active, .btn-snap:active, .btn-audio:active {
-    transform: scale(0.9);
+    transform: scale(0.85);
   }
-  .btn-snap { font-size: 13px; }
-  .btn-audio { font-size: 13px; color: #d29922; }
+  .btn-audio { font-size: 11px; color: #d29922; }
   .btn-audio.active { color: #3fb950; }
+  .btn-snap { font-size: 11px; }
   .btn-reload.spinning .icon {
     animation: spin 0.6s linear infinite;
   }
@@ -90,21 +105,6 @@
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
-  .status {
-    font-size: 10px;
-    color: #8b949e;
-    padding: 2px 6px;
-    background: rgba(0,0,0,0.5);
-    border-radius: 3px;
-    backdrop-filter: blur(2px);
-    flex: 1;
-    text-align: center;
-    min-height: 18px;
-    line-height: 18px;
-  }
-  .status.connected { color: #3fb950; }
-  .status.reloading { color: #d29922; }
-  .status.error { color: #f85149; }
   .empty {
     display: flex;
     align-items: center;
@@ -137,8 +137,8 @@
   <div class="controls">
     <button class="btn-reload" title="Recargar">↻</button>
     <a class="btn-snap" href="/capture/xiaomi" target="_blank" title="Snapshot" download="xiaomi.jpg">📷</a>
-    <div class="status">en vivo</div>
   </div>
+  <div class="status">en vivo</div>
 </div>
 
 <div class="cell" data-cam="a9">
@@ -148,8 +148,8 @@
   <div class="controls">
     <button class="btn-reload" title="Recargar">↻</button>
     <a class="btn-snap" href="/capture/a9" target="_blank" title="Snapshot" download="a9.jpg">📷</a>
-    <div class="status">en vivo</div>
   </div>
+  <div class="status">en vivo</div>
 </div>
 
 <div class="cell" data-cam="steren">
@@ -160,8 +160,8 @@
     <button class="btn-reload" title="Recargar">↻</button>
     <button class="btn-audio" title="Activar audio" style="display:none">🔇</button>
     <a class="btn-snap" href="/capture/steren" target="_blank" title="Snapshot" download="steren.jpg">📷</a>
-    <div class="status">en vivo</div>
   </div>
+  <div class="status">en vivo</div>
 </div>
 
 <div class="cell">
@@ -213,13 +213,11 @@
     // Botón audio Sterem
     const audioBtn = cell.querySelector('.btn-audio');
     if (audioBtn) {
-      // Mostrar después de 2s si el iframe cargó (autoplay bloqueado = muted)
       setTimeout(() => {
         audioBtn.style.display = 'flex';
       }, 3000);
 
       audioBtn.addEventListener('click', () => {
-        // Recargar iframe con user gesture
         audioBtn.textContent = '🔊';
         audioBtn.classList.add('active');
         iframe.src = iframe.src;
