@@ -1,0 +1,21 @@
+streams:
+  steren:
+    - rtsp://127.0.0.1:8554/CCTV_218/hd#timeout=10#reconnect=5
+
+  xiaomi:
+    - ffmpeg:rtsp://thingino:Kimlinda.321@10.88.88.5:554/ch0#timeout=10#reconnect=5
+
+  a9:
+    - ffmpeg:http://127.0.0.1:80/dev/080c0f08F473/video#timeout=10#reconnect=5
+
+log:
+  level: info
+
+api:
+  listen: "10.88.88.1:1984"
+
+rtsp:
+  listen: "127.0.0.1:8555"
+
+webrtc:
+  listen: "10.88.88.1:8556"

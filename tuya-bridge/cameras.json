@@ -1,0 +1,15 @@
+{
+  "cameras": [
+    {
+      "userKey": "us-west_jorgelop1994_at_gmail_com",
+      "deviceId": "eb91478faedf680389ojxl",
+      "deviceName": "CCTV 218",
+      "category": "sp",
+      "rtspPath": "/CCTV_218",
+      "productId": "037a9sqxfwsrglgm",
+      "uuid": "szjse10bddd9e99356a1",
+      "skill": "{\"webrtc\":115,\"audios\":[{\"channels\":1,\"dataBit\":16,\"codecType\":101,\"sampleRate\":8000}],\"videos\":[{\"streamType\":2,\"profileId\":\"\",\"width\":1920,\"codecType\":2,\"sampleRate\":90000,\"height\":1080},{\"streamType\":4,\"width\":640,\"codecType\":2,\"sampleRate\":90000,\"height\":360}]}"
+    }
+  ],
+  "lastUpdated": "2026-07-23T09:01:39.540139104Z"
+}

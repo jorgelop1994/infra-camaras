@@ -1,0 +1,19 @@
+[Unit]
+Description=A9 Camera Bridge (fake naxclow server)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/a9-bridge
+Environment=V720_HOST=5.175.245.8
+Environment=V720_HTTP_PORT=80
+ExecStart=/usr/bin/python3 /opt/a9-bridge/run_server.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

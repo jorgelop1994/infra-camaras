@@ -1,0 +1,18 @@
+services:
+  tuya-bridge:
+    build: ./tuya-bridge
+    container_name: tuya-bridge
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - HOME=/root
+
+  go2rtc:
+    image: alexxit/go2rtc:latest
+    container_name: go2rtc
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./go2rtc.yaml:/config/go2rtc.yaml
+    depends_on:
+      - tuya-bridge

@@ -1,0 +1,28 @@
+[Interface]
+Address = 10.88.88.1/24
+ListenPort = 51820
+PrivateKey = <INSERT_SECRET>
+
+# NAT + forwarding
+PostUp = iptables -t nat -A POSTROUTING -s 10.88.88.0/24 -o eth0 -j MASQUERADE
+PostUp = iptables -A FORWARD -i wg0 -j ACCEPT
+PostUp = iptables -A FORWARD -i eth0 -o wg0 -j ACCEPT
+PostUp = echo 1 > /proc/sys/net/ipv4/conf/wg0/proxy_arp
+
+# DNS redirect for A9
+PostUp = iptables -t nat -A PREROUTING -i eth0 -d 10.88.88.1 -p udp --dport 53 -j DNAT --to-destination 10.88.88.1:53
+PostUp = iptables -t nat -A PREROUTING -i eth0 -d 10.88.88.1 -p tcp --dport 53 -j DNAT --to-destination 10.88.88.1:53
+
+# Port forwarding for services
+PostUp = iptables -t nat -A PREROUTING -i eth0 -d 10.88.88.1 -p tcp --dport 80 -j DNAT --to-destination 10.88.88.1:80
+PostUp = iptables -t nat -A PREROUTING -i eth0 -d 10.88.88.1 -p udp --dport 80 -j DNAT --to-destination 10.88.88.1:80
+
+[Peer]
+# Pixel phone
+PublicKey = <PEER_PIXEL_PUBKEY>
+AllowedIPs = 10.88.88.2/32
+
+[Peer]
+# Other clients
+PublicKey = <PEER_OTHER_PUBKEY>
+AllowedIPs = 10.88.88.3/32

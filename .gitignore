@@ -1,0 +1,7 @@
+# Secrets
+wireguard/*.conf
+!wireguard/*.template
+
+# OS files
+.DS_Store
+Thumbs.db
