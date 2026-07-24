@@ -28,68 +28,55 @@
     display: block;
     background: #0d1117;
   }
-  .label {
+  .topbar {
     position: absolute;
-    top: 4px;
-    left: 4px;
-    z-index: 20;
-    background: rgba(0,0,0,0.75);
-    color: #fff;
-    padding: 1px 8px;
-    border-radius: 3px;
-    font-size: 10px;
-    font-weight: 600;
-    pointer-events: none;
-    backdrop-filter: blur(2px);
-  }
-  .controls {
-    position: absolute;
-    top: 4px;
-    right: 4px;
+    top: 0; left: 0; right: 0;
     z-index: 20;
     display: flex;
     align-items: center;
-    gap: 4px;
+    justify-content: space-between;
+    padding: 3px 6px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%);
     pointer-events: none;
   }
-  .controls > * {
-    pointer-events: auto;
+  .topbar > * { pointer-events: auto; }
+  .topbar-label {
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
   }
-  .status {
-    position: absolute;
-    bottom: 30px;
-    left: 6px;
-    z-index: 20;
+  .topbar-status {
     font-size: 9px;
     color: #8b949e;
-    padding: 1px 6px;
-    background: rgba(0,0,0,0.5);
-    border-radius: 3px;
-    backdrop-filter: blur(2px);
-    pointer-events: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
   }
-  .status.connected { color: #3fb950; }
-  .status.reloading { color: #d29922; }
-  .status.error { color: #f85149; }
+  .topbar-status.connected { color: #3fb950; }
+  .topbar-status.reloading { color: #d29922; }
+  .topbar-status.error { color: #f85149; }
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
   .btn-reload, .btn-snap, .btn-audio {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     border: none;
     border-radius: 50%;
-    background: rgba(0,0,0,0.65);
+    background: rgba(0,0,0,0.5);
     color: #8b949e;
-    font-size: 12px;
+    font-size: 11px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
-    backdrop-filter: blur(2px);
+    transition: all 0.15s;
     flex-shrink: 0;
     text-decoration: none;
   }
   .btn-reload:hover, .btn-snap:hover, .btn-audio:hover {
-    background: rgba(48,54,61,0.85);
+    background: rgba(48,54,61,0.9);
     color: #f0f6fc;
   }
   .btn-reload:active, .btn-snap:active, .btn-audio:active {
@@ -131,37 +118,43 @@
 <body>
 
 <div class="cell" data-cam="xiaomi">
-  <div class="label">Xiaomi</div>
   <div class="loading-overlay">conectando…</div>
   <iframe src="http://10.88.88.1:1984/stream.html?src=xiaomi"></iframe>
-  <div class="controls">
-    <button class="btn-reload" title="Recargar">↻</button>
-    <a class="btn-snap" href="/capture/xiaomi" target="_blank" title="Snapshot" download="xiaomi.jpg">📷</a>
+  <div class="topbar">
+    <span class="topbar-label">Xiaomi</span>
+    <span class="topbar-status connected">en vivo</span>
+    <div class="topbar-actions">
+      <button class="btn-reload" title="Recargar">↻</button>
+      <a class="btn-snap" href="/capture/xiaomi" target="_blank" title="Snapshot" download="xiaomi.jpg">📷</a>
+    </div>
   </div>
-  <div class="status">en vivo</div>
 </div>
 
 <div class="cell" data-cam="a9">
-  <div class="label">A9</div>
   <div class="loading-overlay">conectando…</div>
   <iframe src="http://10.88.88.1:1984/stream.html?src=a9&mode=mjpeg"></iframe>
-  <div class="controls">
-    <button class="btn-reload" title="Recargar">↻</button>
-    <a class="btn-snap" href="/capture/a9" target="_blank" title="Snapshot" download="a9.jpg">📷</a>
+  <div class="topbar">
+    <span class="topbar-label">A9</span>
+    <span class="topbar-status connected">en vivo</span>
+    <div class="topbar-actions">
+      <button class="btn-reload" title="Recargar">↻</button>
+      <a class="btn-snap" href="/capture/a9" target="_blank" title="Snapshot" download="a9.jpg">📷</a>
+    </div>
   </div>
-  <div class="status">en vivo</div>
 </div>
 
 <div class="cell" data-cam="steren">
-  <div class="label">Sterem</div>
   <div class="loading-overlay">conectando…</div>
   <iframe src="http://10.88.88.1:1984/stream.html?src=steren" allow="autoplay; microphone"></iframe>
-  <div class="controls">
-    <button class="btn-reload" title="Recargar">↻</button>
-    <button class="btn-audio" title="Activar audio" style="display:none">🔇</button>
-    <a class="btn-snap" href="/capture/steren" target="_blank" title="Snapshot" download="steren.jpg">📷</a>
+  <div class="topbar">
+    <span class="topbar-label">Sterem</span>
+    <span class="topbar-status connected">en vivo</span>
+    <div class="topbar-actions">
+      <button class="btn-reload" title="Recargar">↻</button>
+      <button class="btn-audio" title="Activar audio" style="display:none">🔇</button>
+      <a class="btn-snap" href="/capture/steren" target="_blank" title="Snapshot" download="steren.jpg">📷</a>
+    </div>
   </div>
-  <div class="status">en vivo</div>
 </div>
 
 <div class="cell">
@@ -179,7 +172,7 @@
   document.querySelectorAll('.cell[data-cam]').forEach(cell => {
     const cam = cell.dataset.cam;
     const btn = cell.querySelector('.btn-reload');
-    const status = cell.querySelector('.status');
+    const status = cell.querySelector('.topbar-status');
     const iframe = cell.querySelector('iframe');
     const overlay = cell.querySelector('.loading-overlay');
 
@@ -187,14 +180,14 @@
 
     iframe.addEventListener('load', () => {
       overlay.classList.remove('active');
-      status.className = 'status connected';
+      status.className = 'topbar-status connected';
       status.textContent = 'en vivo';
     });
 
     let loadTimer = setTimeout(() => {
       if (overlay.classList.contains('active')) {
         overlay.classList.remove('active');
-        status.className = 'status error';
+        status.className = 'topbar-status error';
         status.textContent = 'sin señal';
       }
     }, LOAD_TIMEOUT);
@@ -233,7 +226,7 @@
       cooldowns[cam] = now;
 
       btn.classList.add('spinning');
-      status.className = 'status reloading';
+      status.className = 'topbar-status reloading';
       status.textContent = 'recargando…';
       overlay.classList.add('active');
       iframe.src = iframe.src;
@@ -246,7 +239,7 @@
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) {
         setTimeout(() => {
-          status.className = 'status connected';
+          status.className = 'topbar-status connected';
           status.textContent = 'en vivo';
         }, 500);
       }
