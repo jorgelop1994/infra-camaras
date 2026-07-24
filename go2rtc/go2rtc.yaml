@@ -1,6 +1,6 @@
 streams:
   steren:
-    - rtsp://127.0.0.1:8554/CCTV_218/hd#timeout=10#reconnect=5
+    - rtsp://127.0.0.1:8554/CCTV_218/hd#timeout=30#reconnect=10
 
   xiaomi:
     - ffmpeg:rtsp://thingino:Kimlinda.321@10.88.88.5:554/ch0#timeout=10#reconnect=5
