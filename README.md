@@ -35,6 +35,7 @@ infra-camaras/
 ## Documentación
 
 - [`docs/arquitectura.md`](docs/arquitectura.md) — Topología de red, flujo de cada cámara, servicios, notas importantes
+- [`docs/mejoras.md`](docs/mejoras.md) — Análisis de mejoras potenciales priorizadas
 
 ## Enlaces
 
