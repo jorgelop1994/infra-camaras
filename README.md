@@ -32,6 +32,10 @@ infra-camaras/
 - **Sterem/Steren**: Tuya → tuya-bridge RTSP → go2rtc  
 - **A9**: Naxclow protocol → a9-bridge HTTP → ffmpeg → go2rtc
 
+## Documentación
+
+- [`docs/arquitectura.md`](docs/arquitectura.md) — Topología de red, flujo de cada cámara, servicios, notas importantes
+
 ## Enlaces
 
 - Dashboard: `http://5.175.245.8/dashboard.html`
