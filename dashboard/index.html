@@ -56,7 +56,7 @@
   .controls > * {
     pointer-events: auto;
   }
-  .btn-reload, .btn-snap {
+  .btn-reload, .btn-snap, .btn-audio {
     width: 28px;
     height: 28px;
     border: none;
@@ -73,14 +73,16 @@
     flex-shrink: 0;
     text-decoration: none;
   }
-  .btn-reload:hover, .btn-snap:hover {
+  .btn-reload:hover, .btn-snap:hover, .btn-audio:hover {
     background: rgba(48,54,61,0.85);
     color: #fff;
   }
-  .btn-reload:active, .btn-snap:active {
+  .btn-reload:active, .btn-snap:active, .btn-audio:active {
     transform: scale(0.9);
   }
   .btn-snap { font-size: 13px; }
+  .btn-audio { font-size: 13px; color: #d29922; }
+  .btn-audio.active { color: #3fb950; }
   .btn-reload.spinning .icon {
     animation: spin 0.6s linear infinite;
   }
@@ -153,9 +155,10 @@
 <div class="cell" data-cam="steren">
   <div class="label">Sterem</div>
   <div class="loading-overlay">conectando…</div>
-  <iframe src="http://10.88.88.1:1984/stream.html?src=steren"></iframe>
+  <iframe src="http://10.88.88.1:1984/stream.html?src=steren" allow="autoplay; microphone"></iframe>
   <div class="controls">
     <button class="btn-reload" title="Recargar">↻</button>
+    <button class="btn-audio" title="Activar audio" style="display:none">🔇</button>
     <a class="btn-snap" href="/capture/steren" target="_blank" title="Snapshot" download="steren.jpg">📷</a>
     <div class="status">en vivo</div>
   </div>
@@ -206,6 +209,25 @@
         }
       }, LOAD_TIMEOUT);
     });
+
+    // Botón audio Sterem
+    const audioBtn = cell.querySelector('.btn-audio');
+    if (audioBtn) {
+      // Mostrar después de 2s si el iframe cargó (autoplay bloqueado = muted)
+      setTimeout(() => {
+        audioBtn.style.display = 'flex';
+      }, 3000);
+
+      audioBtn.addEventListener('click', () => {
+        // Recargar iframe con user gesture
+        audioBtn.textContent = '🔊';
+        audioBtn.classList.add('active');
+        iframe.src = iframe.src;
+        setTimeout(() => {
+          audioBtn.style.display = 'none';
+        }, 2000);
+      });
+    }
 
     btn.addEventListener('click', () => {
       const now = Date.now();
